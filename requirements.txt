@@ -1,0 +1,19 @@
+fastapi
+uvicorn
+SQLAlchemy
+alembic
+psycopg2 #linux/mac user use: psycopg2-binary
+asyncpg
+python-dotenv
+pydantic[email]
+httpx
+python-multipart
+passlib[bcrypt]
+pytest
+pytest-asyncio
+pre-commit
+python-jose
+python-multipart
+Jinja2
+aiofiles
+greenlet
