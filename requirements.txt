@@ -2,7 +2,7 @@ fastapi
 uvicorn
 SQLAlchemy
 alembic
-psycopg2 #linux/mac user use: psycopg2-binary
+psycopg2-binary #linux/mac user use: psycopg2-binary
 asyncpg
 python-dotenv
 pydantic[email]

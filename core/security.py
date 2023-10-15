@@ -5,9 +5,11 @@ from jose import jwt, JWTError
 from fastapi import HTTPException, status, Depends
 from core.settings import settings
 from fastapi.security import OAuth2PasswordBearer
-from db.repositories.user import get_user_by_email
-from db.session import get_db
+from data.models.user import User
+
+from data.session import get_db
 from core.hashing import Hasher
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 
@@ -26,15 +28,16 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encode_jwt
 
 
-def authenticate_user(email:str, password: str, db: Session):
-    user = get_user_by_email(email=email, db=db)
-    if not user:
+async def authenticate_user(email:str, password: str, db: AsyncSession):
+    
+    _user: User = await User.findone(db, [User.email == email])
+    if not _user:
         return False
-    if not Hasher.verify_password(password, user.hashed_password):
+    if not Hasher.verify_password(password, _user.password):
         return False
-    return user
+    return _user
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials"
@@ -47,8 +50,9 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    user = get_user_by_email(email=username, db=db)
-    if user is None:
+    #user = get_user_by_email(email=username, db=db)
+    _user: User = await User.findone(db, [User.email == username])
+    if _user is None:
         raise credentials_exception
-    return user
+    return _user
 
