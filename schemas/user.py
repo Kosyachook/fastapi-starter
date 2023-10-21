@@ -6,6 +6,11 @@ class UserCreate(BaseModel):
     password: str = Field(..., min_length=4)
 
 
+class LoginUser(BaseModel):
+    email: EmailStr
+    password: str
+
+
 class ShowUser(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

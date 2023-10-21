@@ -9,8 +9,7 @@ from sqlalchemy.orm import declared_attr, DeclarativeBase
 
 
 
-@as_declarative()
-class Base:
+class Base(DeclarativeBase):
     id: Any
     __name__: str
 

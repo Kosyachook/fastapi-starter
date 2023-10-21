@@ -1,8 +1,9 @@
+from typing import Annotated
 from datetime import timedelta
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 
 from fastapi import Depends, APIRouter, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from data.session import get_db
 from schemas.user import Token
 
@@ -13,7 +14,10 @@ router = APIRouter()
 
 
 @router.post("/token", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+async def login_for_access_token(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()], 
+    db: AsyncSession = Depends(get_db)
+    ):
     user = await authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")
